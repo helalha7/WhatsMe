@@ -1,0 +1,51 @@
+package com.whatsme.messages_service.worker;
+
+import com.whatsme.messages_service.message.models.Message;
+import com.whatsme.messages_service.message.repositories.MessageRepository;
+import com.whatsme.messages_service.webhooks.dtos.GenericMessageDTO;
+import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
+
+import java.util.Map;
+
+@Service
+public class InboundJobRunner {
+    private MessageRepository messageRepository;
+
+    public InboundJobRunner(MessageRepository messageRepository) {
+        this.messageRepository = messageRepository;
+    }
+
+    @Async
+    public void process(String businessId ,GenericMessageDTO genericMessageDTO) {
+        System.out.println(genericMessageDTO);
+        Message message = new Message();
+        message.setContent(genericMessageDTO.messages.getFirst().text.get("body").asText());
+        message.setFrom(genericMessageDTO.messages.getFirst().from);
+        message.setTo(genericMessageDTO.messages.getFirst().to);
+        messageRepository.saveMessage(message);
+        sendMessage(message.getFrom(), businessId, "كل خرا");
+    }
+
+    private void sendMessage(String toPhoneNumber, String fromPhoneNumber, String message) {
+        RestClient client = RestClient.create();
+        client
+                .post()
+                .uri("https://graph.facebook.com/v23.0/"+fromPhoneNumber+"/messages")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer EAAjgyZBYaOQkBPRg9QQhOqSUQVJPkBZANwKjCIcgVTBy1ouw7bjTHil70eAz4BvlTDFOyzx2loWi2ctZBJn3P0XYb3nXrV11iL6rWi5HTiYIM7rTZC2zGR2Fh6WbmSUqkZCrl6wkKOPkWTCNjZAuGdg7GFQhXdODwwtXZCzRNPjAJDJxNHp76TwMt5PfudyZAHDYIAZDZD")
+                .body(
+                        Map.of(
+                                "messaging_product","whatsapp",
+                                "recipient_type","individual",
+                                "to",toPhoneNumber,
+                                "type","text",
+                                "text", Map.of(
+                                        "body",message
+                                )
+                        )
+                ).retrieve().body(String.class);
+    }
+}
