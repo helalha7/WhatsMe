@@ -2,6 +2,7 @@ package com.whatsme.messages_service.worker;
 
 import com.whatsme.messages_service.message.models.Message;
 import com.whatsme.messages_service.message.repositories.MessageRepository;
+import com.whatsme.messages_service.service.GPTMessageService;
 import com.whatsme.messages_service.webhooks.dtos.GenericMessageDTO;
 import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Async;
@@ -13,11 +14,12 @@ import java.util.Map;
 @Service
 public class InboundJobRunner {
     private MessageRepository messageRepository;
-
-    public InboundJobRunner(MessageRepository messageRepository) {
+    private final GPTMessageService gptMessageService;
+    public InboundJobRunner(MessageRepository messageRepository,
+                            GPTMessageService gptMessageService) {
         this.messageRepository = messageRepository;
+        this.gptMessageService = gptMessageService;
     }
-
     @Async
     public void process(String businessId ,GenericMessageDTO genericMessageDTO) {
         System.out.println(genericMessageDTO);
@@ -26,7 +28,8 @@ public class InboundJobRunner {
         message.setFrom(genericMessageDTO.messages.getFirst().from);
         message.setTo(genericMessageDTO.messages.getFirst().to);
         messageRepository.saveMessage(message);
-        sendMessage(message.getFrom(), businessId, "كل خرا");
+        String reply=gptMessageService.complete(message.toString());
+        sendMessage(message.getFrom(), businessId, reply);
     }
 
     private void sendMessage(String toPhoneNumber, String fromPhoneNumber, String message) {
