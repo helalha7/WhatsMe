@@ -16,7 +16,7 @@
 		<maven.compiler.release>${java.version}</maven.compiler.release>
 	</properties>
 
-	<!-- Spring Boot BOM only -->
+	<!-- Spring Boot BOM -->
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -36,7 +36,7 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
-		<!-- OpenAI Java SDK (current API surface with OpenAIClient) -->
+		<!-- OpenAI Java SDK -->
 		<dependency>
 			<groupId>com.openai</groupId>
 			<artifactId>openai-java</artifactId>
@@ -60,11 +60,10 @@
 				<version>3.3.4</version>
 			</plugin>
 
-			<!-- Compiler plugin -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.10.1</version>
+				<version>3.11.0</version>
 				<configuration>
 					<release>${java.version}</release>
 				</configuration>

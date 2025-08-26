@@ -65,7 +65,8 @@ public class SimplePayloadHandler implements PayloadHandler {
             String businessId = value.metadata.phone_number_id;
             //handoff
             inboundJobRunner.process(businessId, genericMessageDTO);
-            System.out.println("handler");
+
+
 
         }
         if(whatsAppPayLoadDTO.entry.getFirst().changes.getFirst().value.extras.containsKey("statuses")) {
