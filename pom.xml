@@ -58,14 +58,26 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<version>3.3.4</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
+				<!-- optional but nice for smaller layers -->
+				<configuration>
+					<layers enabled="true"/>
+				</configuration>
 			</plugin>
 
+			<!-- Compiler plugin -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.11.0</version>
 				<configuration>
-					<release>${java.version}</release>
+					<release>21</release>
 				</configuration>
 			</plugin>
 		</plugins>
